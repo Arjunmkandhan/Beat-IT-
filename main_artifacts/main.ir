@@ -1,0 +1,8 @@
+count = 0
+beat1 = s.C_OldiscoPiano_02_728
+beat2 = s.Fm_Musicloop_SP_07_406
+beat3 = s.Piano_01_112_SP
+beat4 = s.GrandPianoShort_12_B2_78_SP
+order = [beat1, beat3, beat4, beat2]
+FOR i IN order:
+  PLAY i

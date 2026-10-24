@@ -1,0 +1,4 @@
+# Beat It Native Compiler Requirements
+# The compiler runs on standard Python 3.10+ (standard library only).
+# Target compilation requires MinGW-w64 GCC and objdump on PATH (e.g., from CodeBlocks, MSYS2, or TDM-GCC).
+# Native runtime links against Windows Multimedia API (-lwinmm).

@@ -1,0 +1,39 @@
+// Beat It demo
+import from birdsounds, sounds as s, sounds.noise as sn
+
+volume = 60
+
+count = 0
+kick = s.kick
+snare = s.snare
+rain = sn.rain
+chirp = birdsounds.chirp
+
+order = [kick, snare, chirp]
+
+/* sequential: each beat plays completely,
+   then the next one starts */
+for b in order:
+    play(b)
+
+// asynchronous: sleep right after play starts the next sound early
+while count < 3:
+    play(kick, 0, 300, ms)
+    sleep(100)
+    play(snare)
+    count += 1
+
+for i in range(2):
+    play(order[i])
+    sleep(0.2, s)
+    play(rain, 0.1, 0.3, s)
+
+// function is called BEFORE it is defined - allowed
+play_drums(kick, snare, chirp)
+
+void play_drums(a, b, c):
+    play(a)
+    sleep(300)
+    play(b)
+    sleep(300)
+    play(c)
