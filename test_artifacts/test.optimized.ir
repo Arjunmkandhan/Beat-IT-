@@ -1,0 +1,45 @@
+VOLUME 80
+project_title = 'Beat It Master Track'
+tempo_bpm = 128.5
+base_delay = 200
+loop_limit = 3
+is_running = 1
+disco_piano = s.C_OldiscoPiano_02_728
+fm_loop = s.Fm_Musicloop_SP_07_406
+grand_piano = s.GrandPianoShort_12_B2_78_SP
+solo_piano = s.Piano_01_112_SP
+main_song = s.C_OldiscoPiano_02_728
+example = s.example
+n1 = p.note1
+n2 = p.note2
+n3 = p.note3
+n4 = p.note4
+n5 = p.note5
+n6 = p.note6
+n7 = p.note7
+n8 = p.note8
+n9 = p.note9
+n10 = p.note10
+note_sequence = [n1, n2, n3, n4, n5]
+CALL song1(n1, n2)
+step = calculate_step_time(100, 2)
+FUNCTION play_sequence():
+  FOR i IN note_sequence:
+    PLAY i
+    PLAY example, 0, 2, s
+FUNCTION song1(n1, n2):
+  PLAY_ASYNC n1
+  PLAY_ASYNC example
+  PLAY_ASYNC n2
+  PLAY_ASYNC example
+  SLEEP 3 s
+FUNCTION calculate_step_time(base_ms, multiplier):
+  calculated = (base_ms * multiplier)
+  calculated += 50
+  adjusted = (calculated - 10)
+  RETURN adjusted
+FUNCTION get_tempo_scale(speed_val):
+  ratio = (speed_val / 100.0)
+  RETURN ratio
+FUNCTION get_track_name(name_str):
+  RETURN name_str
