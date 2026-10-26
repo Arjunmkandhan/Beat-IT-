@@ -24,7 +24,7 @@ class Parser:
         return tok
 
     def at(self, kind, value=None, offset=0):
-        tok = self.peek(offset)
+        tok = self.peek(offset) # offset -> look ahead 
         return tok.kind == kind and (value is None or tok.value == value)
 
     def accept(self, kind, value=None):
@@ -193,7 +193,7 @@ class Parser:
         self.end_of_line()
         return Return(value, line)
 
-    def expr(self):
+    def expr(self): # handles the comparison == , < 
         left = self.additive()
         tok = self.peek()
         if tok.kind == "OP" and tok.value in COMPARE_OPS:
@@ -201,7 +201,7 @@ class Parser:
             left = BinOp(tok.value, left, self.additive(), tok.line)
         return left
 
-    def additive(self):
+    def additive(self): 
         left = self.term()
         while self.peek().kind == "OP" and self.peek().value in ("+", "-"):
             op = self.advance()

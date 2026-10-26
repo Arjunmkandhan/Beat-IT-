@@ -54,6 +54,7 @@ def decompile_file(executable_file: str | Path, output_file: str | Path | None =
         raise BeatItError("Decompiler input must be a native Windows .exe file")
 
     data = executable.read_bytes()
+    # checking for the exe file signature . 
     if not data.startswith(b"MZ"):
         raise BeatItError("File is not a valid Windows PE executable")
 
@@ -269,3 +270,12 @@ def decompile_file(executable_file: str | Path, output_file: str | Path | None =
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(lines).strip() + "\n", encoding="utf-8")
     return output
+
+
+
+
+
+
+
+
+

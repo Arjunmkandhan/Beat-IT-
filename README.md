@@ -44,6 +44,7 @@ python .\beatit\main.py compile .\sounds.bi --tokens
 python .\beatit\main.py compile .\sounds.bi --ast
 python .\beatit\main.py compile .\sounds.bi --ir
 python .\beatit\main.py compile .\sounds.bi --optimized-ir
+python .\beatit\main.py compile .\sounds.bi --asm 
 ```
 
 `--asm` performs a normal compile, then prints the generated assembly. `-o` selects the executable path and `--emit-dir` selects the artifact directory.
