@@ -1,4 +1,4 @@
-# Beat It Native Compiler Requirements
-# The compiler runs on standard Python 3.10+ (standard library only).
-# Target compilation requires MinGW-w64 GCC and objdump on PATH (e.g., from CodeBlocks, MSYS2, or TDM-GCC).
-# Native runtime links against Windows Multimedia API (-lwinmm).
+# Beat It has no third-party Python runtime dependencies.
+# Python 3.10+ is required; installing this file with pip is intentionally a no-op.
+# External Windows tooling: MinGW-w64 GCC builds executables; objdump improves
+# decompilation; Windows supplies the winmm library linked as -lwinmm.

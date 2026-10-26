@@ -1,4 +1,4 @@
-/* Fixed native support library. Generated assembly calls these functions. */
+/* native support library. Generated assembly calls these functions. */
 #include <windows.h>
 #include <mmsystem.h>
 #include <stdio.h>

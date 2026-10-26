@@ -1,12 +1,13 @@
 """Native Beat It compiler orchestration (phases 1 through 7)."""
-from __future__ import annotations
+from __future__ import annotations 
+
 
 import os
 import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
-
+# ------------------------------------- 
 from ast_nodes import Qualified, Import
 from beat_parser import Parser
 from errors import BeatItError
@@ -82,12 +83,16 @@ def compile_pipeline(source_file):
         raise BeatItError("Native compiler input must be a .bi file")
     if not source.is_file():
         raise FileNotFoundError(source)
+
+    # frontend
     tokens = tokenize(source.read_text(encoding="utf-8"))
     ast = Parser(tokens).parse_program()
     analyzer = SemanticAnalyzer(source.parent)
     analyzer.analyze(ast)
+    # middle 
     ir = IRGenerator().generate(ast)
-    optimized_ir = Optimizer().optimize(ir)
+    optimized_ir = Optimizer().optimize(ir) 
+    # backend
     asm_source = NativeCodeGenerator(_sound_paths(ast, analyzer, source.parent)).generate(optimized_ir)
     return Compilation(source, tokens, ast, analyzer, ir, optimized_ir, asm_source)
 

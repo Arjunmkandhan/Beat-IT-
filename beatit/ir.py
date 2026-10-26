@@ -76,6 +76,7 @@ class IRVolume:
 class IRGenerator:
     """Lower the AST into a backend-neutral statement representation."""
     def generate(self, program):
+        """program is ast which was given by the parser"""
         functions, globals_ = [], []
         for statement in program.body:
             if isinstance(statement, (Import,)):

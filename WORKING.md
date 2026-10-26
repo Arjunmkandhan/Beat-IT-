@@ -32,7 +32,7 @@ The example imports `sounds`, binds four named WAV sounds to variables, construc
 - The semantic analyzer checks that `sounds\` exists beside `main.bi` and that each referenced name has a matching `.wav`.
 - The IR generator lowers the assignments and loop; imports are omitted because they are compile-time metadata.
 - The backend emits string pointers for the sound paths, global variables, a fixed-size array for `order`, and a loop that reads list entries.
-- `play(i)` calls the C runtime, which uses synchronous `PlaySoundA`.
+- `play(i)` calls the C runtime, which uses a synchronous MCI play command.
 
 `count = 0` remains a normal assignment even though the sample does not subsequently use it.
 
@@ -79,7 +79,7 @@ Comparison chaining is not supported. The parser recognizes:
 
 It checks that import directories exist next to the source file, sound references use imported modules and resolve to assets, variables and functions are known, function calls have the declared number of arguments, and return statements follow basic `void`/non-`void` rules. A `void` function call cannot be used as an expression. `volume` is allowed only at top level.
 
-`assets.find_sound_file()` checks exactly `<name>.wav`. General expression type checking is not implemented. Name collection is set-based, not flow-sensitive; it does not reliably catch use before assignment or prove that all paths of a typed function return.
+`assets.find_sound_file()` searches `<name>` with WAV, MP3, AAC, M4A, FLAC, OGG, OPUS, MID/MIDI, and WMA extensions. General expression type checking is not implemented. Name collection is set-based, not flow-sensitive; it does not reliably catch use before assignment or prove that all paths of a typed function return.
 
 ## 6. IR and optimizer: `ir.py`, `optimizer.py`
 
@@ -103,10 +103,10 @@ Supported native constructs include integer arithmetic/comparisons, variables, s
 
 Known limits matter when interpreting the grammar:
 
-- Decimal-valued numbers are rejected unless their numeric value is whole; for example, `1.5` fails but `1.0` is emitted as integer `1`.
+- Decimal values are truncated by native lowering; for example, `1.5` becomes integer `1`.
 - String values are not implemented by code generation.
-- `volume` is dropped during IR generation and does nothing.
-- Optional `play` start/end/unit values are parsed but ignored by code generation.
+- `volume` is lowered to the runtime's `waveOutSetVolume` call.
+- Optional `play` start/end/unit values are passed to the runtime as a millisecond playback window; `play_async` is non-blocking.
 - Other iterable forms for `for` produce a backend error.
 - Function parameters and other variables are global storage slots, not isolated locals. The generated backend therefore does not provide reliable recursion or independent function-local state.
 - Calls only pass the first four parameters. The backend does not implement typed calling conventions for `double` or `string`.
@@ -118,10 +118,10 @@ Known limits matter when interpreting the grammar:
 
 `native_runtime.c` implements:
 
-- `beatit_play(relative)`: derives the executable folder, appends the relative path, and calls `PlaySoundA` with `SND_FILENAME | SND_SYNC`.
+- `beatit_play(relative, start_ms, end_ms, is_async)`: derives the executable folder, appends the relative path, and sends MCI open/play commands.
 - `beatit_sleep(milliseconds)`: calls Windows `Sleep`.
 
-Because playback is synchronous, each sound completes before the next `play` call continues. No mixer or overlap is implemented. Sleep units in the language are `ms` (default), `s`, `min`, and `hr`.
+Normal playback is synchronous, while `play_async` starts an MCI alias without waiting. Async aliases are not currently closed. Sleep units in the language are `ms` (default), `s`, `min`, and `hr`.
 
 ## 9. Decompiler: `decompiler.py`
 

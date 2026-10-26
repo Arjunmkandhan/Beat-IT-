@@ -36,11 +36,11 @@ comparison -> addition/subtraction -> multiplication/division
 
 Comparisons are limited to one per expression. The AST is made of dataclasses for imports, assignments, playback, loops, functions, returns, calls, literals, lists, indexing, and operators.
 
-The grammar recognizes `int`, `double`, `string`, and `void` function declarations; parameters are untyped names. `play` accepts optional start/end/unit syntax, and `volume = expression` is a statement. These syntax features are not all implemented by the native backend.
+The grammar recognizes `int`, `double`, `string`, and `void` function declarations; parameters are untyped names. `play` accepts optional start/end/unit syntax, and `volume = expression` is a statement. Playback windows and volume are implemented; strings and real floating-point semantics remain outside the native backend.
 
 ## Semantic analysis: `semantic.py`, `assets.py`
 
-`SemanticAnalyzer.analyze()` first registers top-level imports and function declarations, then walks statements and expressions to check them. Imports resolve folders relative to the source file. An imported sound reference must resolve to a file named `<sound>.wav`; `assets.SOUND_EXTENSIONS` currently contains only `.wav`.
+`SemanticAnalyzer.analyze()` first registers top-level imports and function declarations, then walks statements and expressions to check them. Imports resolve folders relative to the source file. An imported sound reference must resolve to `<sound>` plus one of the extensions in `assets.SOUND_EXTENSIONS` (WAV, MP3, AAC, M4A, FLAC, OGG, OPUS, MID/MIDI, or WMA).
 
 Checks include duplicate import aliases and function names, unresolved variables/modules/functions, call argument counts, use of a `void` call as a value, return outside a function, and the presence/absence of return expressions based on `void` versus non-`void`. `volume` must be top-level.
 
@@ -48,9 +48,7 @@ This is not a full type checker. `assigned_names()` collects names into sets rat
 
 ## Intermediate representation: `ir.py`
 
-`IRGenerator` drops imports and `Volume` statements, separates functions from global statements, and lowers remaining statements into `IRProgram(globals, functions)`. IR nodes represent assignment, augmented assignment, playback, sleep, loops, calls, and returns. Expressions remain AST expression nodes. `format_ir()` provides the textual form used by CLI inspection and artifact files.
-
-Because `Volume` is discarded here, a `volume = ...` statement has no effect on generated programs.
+`IRGenerator` drops imports, separates functions from global statements, and lowers remaining statements into `IRProgram(globals, functions)`. IR nodes represent assignment, augmented assignment, playback, sleep, loops, calls, returns, and volume. Expressions remain AST expression nodes. `format_ir()` provides the textual form used by CLI inspection and artifact files.
 
 ## Optimization: `optimizer.py`
 
@@ -71,9 +69,9 @@ Sound expressions become pointers to paths relative to the source directory. Lis
 
 Native backend constraints:
 
-- `Num` must have a whole-number value; a decimal such as `1.5` raises `BeatItError`, while `1.0` is emitted as integer `1`.
+- `Num` is lowered with `int(value)`, so a decimal such as `1.5` silently becomes integer `1`; real floating-point lowering does not exist.
 - `Str` and other unsupported expression nodes cannot be lowered.
-- `play` lowering evaluates and passes only `beat`; parsed `start`, `end`, and `unit` fields are ignored.
+- `play` lowering passes beat path, start, end, and async flag to the runtime; time units become milliseconds.
 - `for` only handles `Range` or a previously recognized list variable.
 - Calls use the first four arguments in `rcx`, `rdx`, `r8`, and `r9`; additional arguments are not passed.
 - All user variables, including function parameters, are emitted in global storage. Calls are not reentrant and recursive/local-variable semantics are not implemented.
@@ -83,9 +81,9 @@ These are current implementation constraints, not claims about the parser gramma
 
 ## Linker and runtime: `compiler.py`, `native_runtime.c`
 
-The compiler finds MinGW GCC on `PATH` or in common installation folders, then runs it with the assembly, the fixed C runtime, and `-lwinmm`. The executable is a Windows PE binary. Imported sound folders are copied next to the executable, preserving relative paths. The C runtime builds the path from the executable directory and calls `PlaySoundA(..., SND_FILENAME | SND_SYNC)`; playback is synchronous. `beatit_sleep()` delegates to Windows `Sleep()`.
+The compiler finds MinGW GCC on `PATH` or in common installation folders, then runs it with the assembly, the fixed C runtime, and `-lwinmm`. The executable is a Windows PE binary. Imported sound folders are copied next to the executable, preserving relative paths. The C runtime builds the path from the executable directory, uses MCI for normal/from/from-to playback, calls `waveOutSetVolume` for volume, and delegates sleeping to Windows `Sleep()`. `play_async` starts MCI playback without waiting.
 
-The runtime does not mix concurrent audio, implement volume control, or crop playback to a specified time window.
+Async MCI aliases are not cleaned up by the current runtime, so it is not a production-quality mixer.
 
 ## CLI: `main.py`
 

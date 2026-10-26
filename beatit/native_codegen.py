@@ -3,7 +3,6 @@ from ast_nodes import *
 from ir import *
 from errors import BeatItError
 
-
 class NativeCodeGenerator:
     """Turns optimized IR into GAS-compatible Windows x86-64 assembly.
 

@@ -16,7 +16,7 @@ class SemanticAnalyzer:
         self.modules = {}      # alias (or dotted path) -> folder
         self.functions = {}    # name -> FuncDef
 
-    def analyze(self, program):
+    def analyze(self, program): # program is the AST 
         # pass 1: collect imports and function signatures (so order does not matter)
         for stmt in program.body:
             if isinstance(stmt, Import):

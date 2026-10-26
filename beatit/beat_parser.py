@@ -1,4 +1,6 @@
-"""PHASE 2 - Syntax analysis (recursive-descent parser). Builds the AST."""
+"""PHASE 2 - Syntax analysis (recursive-descent parser). Builds the AST.""" 
+"""Using LL(1) parsing - recursive descent and selective cases it uses LL(2) """
+
 from ast_nodes import *
 from errors import BeatItError
 
@@ -43,6 +45,9 @@ class Parser:
     def end_of_line(self):
         self.expect("NEWLINE")
 
+    # @dataclass
+    # class Program:
+    #     body: List[Any]
     def parse_program(self):
         body = []
         while not self.at("EOF"):

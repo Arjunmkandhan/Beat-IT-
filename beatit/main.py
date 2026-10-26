@@ -1,11 +1,13 @@
 """Command-line driver for running, compiling, and decompiling Beat It code."""
+# --- 
 import argparse
 import sys
 from pathlib import Path
 from pprint import pprint
-
+# --- 
 from errors import BeatItError
 
+# python .\beatit\main.py compile .\sounds.bi -o .\build\sounds.exe 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Beat It audio programming language")
@@ -57,7 +59,7 @@ def main(argv=None):
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)
     except FileNotFoundError:
-        print("Error: input file not found", file=sys.stderr)
+        print("Error: input file not found ", file=sys.stderr)
         sys.exit(1)
 
 
