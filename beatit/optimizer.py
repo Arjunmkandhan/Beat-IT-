@@ -6,7 +6,7 @@ from ir import *
 
 
 class Optimizer:
-    """Performs constant folding and removes statically unreachable statements."""
+    """Performs constant folding and removes statically unreachable statements(dead code).""" 
     def optimize(self, program):
         result = deepcopy(program)
         result.globals = self.block(result.globals)
@@ -53,4 +53,25 @@ class Optimizer:
                 except ZeroDivisionError:
                     return expr
         return expr
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

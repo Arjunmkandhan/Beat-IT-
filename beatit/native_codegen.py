@@ -118,7 +118,11 @@ class NativeCodeGenerator:
 
     def expression(self, expr):
         if isinstance(expr, Num):
-            self.lines.append(f"  mov rax, {int(expr.value)}")
+            self.lines.append(f"  mov rax, {int(expr.value)}") 
+        elif isinstance(expr, Str): 
+            label = self.fresh("str")  
+            self.data.extend([".section .rdata,\"dr\"",f"{label}: .asciz \"{expr.value}\""])
+            self.lines.append(f"  lea rax, [rip + {label}]") 
         elif isinstance(expr, Var):
             self.lines.append(f"  mov rax, QWORD PTR [rip + var_{expr.name}]")
         elif isinstance(expr, Qualified):

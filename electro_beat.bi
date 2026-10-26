@@ -1,14 +1,9 @@
-// =====================================================================
-// Composition: Midnight Serenade in Beat It (.bi)
-// =====================================================================
-
 import from sounds.piano_notes as p
 import from sounds as s
 
-// Set optimal playback volume to 75%
 volume = 75
 
-// Define a reusable melodic phrase function with slicing
+
 void play_verse(noteA, noteB, noteC):
     play(noteA, 0, 1200, ms)
     sleep(150, ms)

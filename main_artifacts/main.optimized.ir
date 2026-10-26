@@ -1,0 +1,61 @@
+VOLUME 80
+project_title = 'Beat It Master Track'
+tempo_bpm = 128.5
+base_delay = 200
+loop_limit = 3
+is_running = 1
+disco_piano = s.C_OldiscoPiano_02_728
+fm_loop = s.Fm_Musicloop_SP_07_406
+grand_piano = s.GrandPianoShort_12_B2_78_SP
+solo_piano = s.Piano_01_112_SP
+main_song = s.C_OldiscoPiano_02_728
+n1 = p.note1
+n2 = p.note2
+n3 = p.note3
+n4 = p.note4
+n5 = p.note5
+note_sequence = [n1, n2, n3, n4, n5]
+current_track = get_track_name(project_title)
+step_delay = calculate_step_time(base_delay, 2)
+negative_offset = -50
+final_delay = (step_delay + negative_offset)
+scale_factor = get_tempo_scale(tempo_bpm)
+PLAY disco_piano, 0, 2, s
+SLEEP 1 s
+PLAY_ASYNC main_song, 1, 5, s
+SLEEP 500 ms
+CALL play_triad_harmony(n1, n3, n5)
+first_note = note_sequence[0]
+PLAY first_note
+FOR current_note IN note_sequence:
+  PLAY current_note, 0, 500, ms
+  SLEEP 100 ms
+CALL play_melody_loop()
+counter = 0
+WHILE (counter < loop_limit):
+  PLAY_ASYNC fm_loop, 0, 1000, ms
+  SLEEP 1000 ms
+  counter += 1
+FOR idx IN range(2):
+  PLAY solo_piano, 0, 1500, ms
+  SLEEP 250 ms
+SLEEP 1 s
+FUNCTION calculate_step_time(base_ms, multiplier):
+  calculated = (base_ms * multiplier)
+  calculated += 50
+  adjusted = (calculated - 10)
+  RETURN adjusted
+FUNCTION get_tempo_scale(speed_val):
+  ratio = (speed_val / 100.0)
+  RETURN ratio
+FUNCTION get_track_name(name_str):
+  RETURN name_str
+FUNCTION play_triad_harmony(noteA, noteB, noteC):
+  PLAY_ASYNC noteA, 0, 1200, ms
+  PLAY_ASYNC noteB, 0, 1200, ms
+  PLAY noteC, 1, 3, s
+  SLEEP 200 ms
+FUNCTION play_melody_loop():
+  FOR note IN note_sequence:
+    PLAY note, 0, 800, ms
+    SLEEP 100 ms

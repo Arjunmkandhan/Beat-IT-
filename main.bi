@@ -27,7 +27,7 @@ disco_piano = s.C_OldiscoPiano_02_728
 fm_loop = s.Fm_Musicloop_SP_07_406
 grand_piano = s.GrandPianoShort_12_B2_78_SP
 solo_piano = s.Piano_01_112_SP
-main_song = s.aaj_ki_raat
+main_song = s.C_OldiscoPiano_02_728
 
 // Sound references from sounds/piano_notes/ subfolder
 n1 = p.note1
@@ -67,8 +67,8 @@ void play_triad_harmony(noteA, noteB, noteC):
     sleep(200, ms)
 
 // Function iterating over a list parameter
-void play_melody_loop(list_var):
-    for note in list_var:
+void play_melody_loop():
+    for note in note_sequence:
         play(note, 0, 800, ms)
         sleep(100, ms)
 
@@ -107,8 +107,8 @@ for current_note in note_sequence:
     play(current_note, 0, 500, ms)
     sleep(100, ms)
 
-// Function call with list
-play_melody_loop(note_sequence)
+
+play_melody_loop()
 
 // While loop with comparison operators (<, !=, ==, <=, >=, >)
 counter = 0
